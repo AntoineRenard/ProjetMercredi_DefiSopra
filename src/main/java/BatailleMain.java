@@ -14,7 +14,7 @@ public class BatailleMain {
 	public static void main(String[] args) {
 		
 	    RestClient restClient = new RestClient();
-	    String teamName, teamPwd, idEquipe, nextBattleId, practiceId, gameStatus;
+	    String teamName, teamPwd, idEquipe, nextBattleId, practiceId, gameStatus, gameBoard;
 		Properties prop = new Properties();
 		
 		//test de l'api avec : affiche pong
@@ -46,6 +46,8 @@ public class BatailleMain {
 		    //test
 		    System.out.println("Status du jeu (ex: DEFEAT) : "+gameStatus);
 		    
+		    gameBoard =restClient.getGameBoard(practiceId);
+		    System.out.println("Plateau du jeu : "+gameBoard);
 		} 
 		catch (IOException ex) {
 		    ex.printStackTrace();

@@ -55,5 +55,20 @@ public class RestClient {
 		
 		return webtarget.request().get(String.class);
 	}
+	
+	//récupération du plateau du jeu
+	public String getGameBoard(String partieId) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"?format=String");		
+		
+		return webtarget.request().get(String.class);
+	}
+	
+	
+
+	
+	
 
 }
