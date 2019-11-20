@@ -14,7 +14,7 @@ public class BatailleMain {
 	public static void main(String[] args) {
 		
 	    RestClient restClient = new RestClient();
-	    String teamName, teamPwd, idEquipe;
+	    String teamName, teamPwd, idEquipe, nextBattle;
 		Properties prop = new Properties();
 		
 		//test de l'api avec : affiche pong
@@ -31,8 +31,12 @@ public class BatailleMain {
 			
 			//Appel de la fonction pour avoir l'Id de l'équipe
 		    idEquipe = restClient.getIdEquipe(teamName, teamPwd);
-		    
+		    //test
 		    System.out.println("ID de l'equipe : "+idEquipe);
+		    
+		    nextBattle = restClient.getIdNextBattle(idEquipe);
+		    //test
+		    System.out.println("Prochain affrontement (NA si y a rien) : "+nextBattle);
 	
 		} 
 		catch (IOException ex) {

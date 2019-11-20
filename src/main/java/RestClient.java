@@ -27,4 +27,13 @@ public class RestClient {
 		
 		return webtarget.request().get(String.class);
 	}
+	
+public String getIdNextBattle(String idEquipe) {
+		
+		Client client = ClientBuilder.newClient();
+				
+		WebTarget webtarget = client.target(API_URI+"/versus/next/"+idEquipe);		
+		
+		return webtarget.request().get(String.class);
+	}
 }
