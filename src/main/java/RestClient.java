@@ -45,4 +45,15 @@ public class RestClient {
 		
 		return webtarget.request().get(String.class);
 	}
+	
+	//Deroulement de la partie : retourne le statut de la partie
+	public String getGameStatus(String partieId, String idEquipe) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/status/"+partieId+"/"+idEquipe);		
+		
+		return webtarget.request().get(String.class);
+	}
+
 }
