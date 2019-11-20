@@ -22,7 +22,7 @@ public class RestClient {
 	public String getIdEquipe(String teamName, String teamPwd) {
 		
 		Client client = ClientBuilder.newClient();
-		
+				
 		WebTarget webtarget = client.target(API_URI+"/player/getIdEquipe/"+teamName+"/"+teamPwd);		
 		
 		return webtarget.request().get(String.class);

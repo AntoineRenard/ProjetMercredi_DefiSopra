@@ -22,7 +22,7 @@ public class BatailleMain {
 		
 		try {
 		
-			InputStream stream = new FileInputStream("C:\\Users\\Utilisateur\\eclipse-workspace\\TP1\\src\\main\\resources\\configuration.properties");
+			InputStream stream = new FileInputStream("C:\\Users\\Utilisateur\\eclipse-workspace\\TP2_API_REST\\src\\main\\resources\\configuration.properties");
 			prop.load(stream);	
 			
 			//Valuation des paramètres 
@@ -31,6 +31,8 @@ public class BatailleMain {
 			
 			//Appel de la fonction pour avoir l'Id de l'équipe
 		    idEquipe = restClient.getIdEquipe(teamName, teamPwd);
+		    
+		    System.out.println("ID de l'equipe : "+idEquipe);
 	
 		} 
 		catch (IOException ex) {
