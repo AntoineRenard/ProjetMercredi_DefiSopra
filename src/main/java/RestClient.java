@@ -67,8 +67,48 @@ public class RestClient {
 	}
 	
 	
+	//récupération du plateau du jeu trier
+	public String getGameBoardSorted(String partieId,String idEquipe) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"/"+idEquipe+"?format=String");		
+		
+		return webtarget.request().get(String.class);
+	}
+	
 
 	
+	//récupération du dernier mouvement de l'adversaire
+	public String getLastEnnemieMove(String partieId,String idEquipe) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/getlastmove/"+partieId+"/"+idEquipe);		
+		
+		return webtarget.request().get(String.class);
+	}
+
+	//lancer une attaque
+	public String lancerAttaque(String partieId,String idEquipe,String move) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/play/"+partieId+"/"+idEquipe+"/"+move);		
+		
+		return webtarget.request().get(String.class);
+	}
+
+
+	//récupération du nom de l'adversaire
+	public String getNameEquipeAdverse(String partieId,String idEquipe) {
+		
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget webtarget = client.target(API_URI+"/game/opponent/"+partieId+"/"+idEquipe);		
+		
+		return webtarget.request().get(String.class);
+	}
 	
 
 }

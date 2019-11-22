@@ -34,9 +34,9 @@ public class BatailleMain {
 		    //test
 		    System.out.println("ID de l'equipe : "+idEquipe);
 		    
-		    nextBattleId = restClient.getIdNextBattle(idEquipe);
+		    //nextBattleId = restClient.getIdNextBattle(idEquipe);
 		    //test
-		    System.out.println("Prochain affrontement (NA si y a rien) : "+nextBattleId);
+		    //System.out.println("Prochain affrontement (NA si y a rien) : "+nextBattleId);
 		    
 		    practiceId = restClient.getPraticeId("2", idEquipe);
 		    //test
