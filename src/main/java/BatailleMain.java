@@ -22,7 +22,7 @@ public class BatailleMain {
 		
 		try {
 		
-			InputStream stream = new FileInputStream("C:\\Users\\Utilisateur\\eclipse-workspace\\TP2_API_REST\\src\\main\\resources\\configuration.properties");
+			InputStream stream = new FileInputStream("C:\\Users\\AHMAD\\eclipse-workspace\\ProjetMercredi_DefiSopra\\src\\main\\resources\\configuration.properties");
 			prop.load(stream);	
 			
 			//Valuation des paramètres 
