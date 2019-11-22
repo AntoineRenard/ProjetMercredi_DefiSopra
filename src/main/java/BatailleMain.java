@@ -47,6 +47,7 @@ public class BatailleMain {
 		    System.out.println("Status du jeu (ex: DEFEAT) : "+gameStatus);
 		    
 		    gameBoard =restClient.getGameBoard(practiceId);
+		    String playerID = gameBoard['playerBoards']['playerId'];
 		    System.out.println("Plateau du jeu : "+gameBoard);
 		} 
 		catch (IOException ex) {
