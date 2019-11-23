@@ -99,6 +99,8 @@ public class RestClient {
 		return webtarget.request().get(String.class);
 	}
 
+	
+
 
 	//récupération du nom de l'adversaire
 	public String getNameEquipeAdverse(String partieId,String idEquipe) {
