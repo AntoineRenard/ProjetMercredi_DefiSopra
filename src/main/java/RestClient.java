@@ -61,7 +61,7 @@ public class RestClient {
 		
 		Client client = ClientBuilder.newClient();
 		
-		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"?format=String");		
+		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"?format=JSON");		
 		
 		return webtarget.request().get(String.class);
 	}
@@ -72,7 +72,7 @@ public class RestClient {
 		
 		Client client = ClientBuilder.newClient();
 		
-		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"/"+idEquipe+"?format=String");		
+		WebTarget webtarget = client.target(API_URI+"/game/board/"+partieId+"/"+idEquipe+"?format=JSON");		
 		
 		return webtarget.request().get(String.class);
 	}

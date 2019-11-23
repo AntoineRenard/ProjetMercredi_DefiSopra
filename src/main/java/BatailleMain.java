@@ -57,10 +57,6 @@ public class BatailleMain {
 			lancer_versus();
 		}
 		
-		
-			
-		
-					
 	}
 	
 	public static void initialise_actionPersonnageExistant() {
@@ -90,7 +86,7 @@ public class BatailleMain {
 		
 		try {
 				
-				InputStream stream = new FileInputStream("C:\\Users\\Utilisateur\\eclipse-workspace\\TP2_API_REST\\src\\main\\resources\\configuration.properties");
+				InputStream stream = new FileInputStream("C:\\Users\\AHMAD\\eclipse-workspace\\ProjetMercredi_DefiSopra\\src\\main\\resources\\configuration.properties");
 				prop.load(stream);	
 				
 			} 
@@ -201,6 +197,7 @@ public class BatailleMain {
 		reload_gameBoard();
 		
 		System.out.println("Plateau du jeu : "+gameBoard);
+
 	}
 	public static void reload_gameBoard() {
 		  gameBoard =restClient.getGameBoardSorted(idPartie, idEquipe);
