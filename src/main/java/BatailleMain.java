@@ -209,9 +209,8 @@ public class BatailleMain {
 		  
 		  //Split de la chaine en 3 tableau
 		  String [] arrayAction = enemyLastMove.split("\\$");	 
-		  System.out.println("ArrayAction => " +arrayAction+ " Size "+arrayAction.length);
-		 		  
-		  System.out.println("The Builders            "+restClient.getNameEquipeAdverse(idPartie, idEquipe));
+				 		  
+		  System.out.println("The Builders                                   "+restClient.getNameEquipeAdverse(idPartie, idEquipe));
 		  int i = 0;
 		  myFighters = new ArrayList<EpicHero>();
 		  enemyFighters = new ArrayList<EpicHero>();
@@ -235,14 +234,20 @@ public class BatailleMain {
 				
 			   //enemyFighters.get(j).setLastAction=last_action_ennemie[1];
 			   //enemyFighters.get(j).setLastCible=last_action_ennemie[2];
-		    System.out.println((j+1)+" "+myFighters.get(j).getFighterClass()+"            "+(j+1)+" "+enemyFighters.get(j).getFighterClass());
-		    System.out.println("Vie : "+myFighters.get(j).getCurrentLife()+"            Vie : "+enemyFighters.get(j).getCurrentLife());
-		    System.out.println("Mana : "+myFighters.get(j).getCurrentMana()+"            Mana : "+enemyFighters.get(j).getCurrentMana());
-		    System.out.println("Statut : "+myFighters.get(j).getStates()+"       Statut : "+enemyFighters.get(j).getStates());
+		    System.out.println((j+1)+" "+myFighters.get(j).getFighterClass()+"                                           "+(j+1)+" "+enemyFighters.get(j).getFighterClass());
+		    System.out.println("Vie : "+myFighters.get(j).getCurrentLife()+"                                       Vie : "+enemyFighters.get(j).getCurrentLife());
+		    System.out.println("Mana : "+myFighters.get(j).getCurrentMana()+"                                      Mana : "+enemyFighters.get(j).getCurrentMana());
+		   
+		    int statut1 = myFighters.get(j).getStates()!=null ? myFighters.get(j).getStates().get(0).getRemainingDuration() : 0;
+		    String typeStatut1 = myFighters.get(j).getStates()!=null ? myFighters.get(j).getStates().get(0).getType() : "'Aucun'";
+		    String typeStatut2 = enemyFighters.get(j).getStates()!=null ? enemyFighters.get(j).getStates().get(0).getType() : "'Aucun'";
+		    int statut2 = enemyFighters.get(j).getStates()!=null ? enemyFighters.get(j).getStates().get(0).getRemainingDuration() : 0;
+		    
+		    System.out.println("Statut : Type = "+typeStatut1+", Durée restante => "+statut1+" Statut :Type = "+typeStatut2+" et Durée restante => "+statut2);
 		    if(nb_tour >4 & j< arrayAction.length) {
 		    	System.out.println("----------------------------------------------------------------------------");
 		    	String [] last_action_ennemie=arrayAction[j].split(",",3);		   	
-		    	System.out.println("        Dernier coup enemi: ACTION => "+last_action_ennemie[1]+" et CIBLE => "+last_action_ennemie[2]);
+		    	System.out.println("        Dernier coup enemi: ACTION = '"+last_action_ennemie[1]+"', CIBLE = '"+last_action_ennemie[2]+"'");
 		    	System.out.println("---------------------------------------------------------------------------");
 		    }
 		    
