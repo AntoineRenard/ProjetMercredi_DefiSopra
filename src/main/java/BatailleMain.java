@@ -12,6 +12,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.google.gson.Gson;
+
 
 public class BatailleMain {
 	public static Scanner sc = new Scanner(System.in);
@@ -19,16 +21,12 @@ public class BatailleMain {
 	public static Properties prop = new Properties();
 	public static String idEquipe,idPartie,gameStatus, gameBoard,statut_personnage,statut_coup,nom_personnage,action_personnage,cible_personnage,attaque_a_effectuer,nom_equipe_adverse,teamName,teamPwd;
 	public static List<String> personnageDisponible,personnageEquipe,actionPersonnageAutoriser,actionPersonnageExistant;
-	public static int type_partie,nb_tour,numero_bot,numero_personnage;
-	
+	public static int type_partie,nb_tour,numero_bot,numero_personnage,p_orc,p_priest,p_guard;
+	public static ArrayList<EpicHero> myFighters,enemyFighters;
+	public static Gson gson;
 	
 	
 	public static void main(String[] args) {
-
-	   
-	  
-	   
-	    
 
 		//test de l'api avec : affiche pong
 		//System.out.println("Retour de l'appel de l'api : " +restClient.getPing());
@@ -39,14 +37,14 @@ public class BatailleMain {
 		    //test
 		   // System.out.println("ID de l'equipe : "+idEquipe);
 		
-		System.out.println("Bienvenu sur God of wars");
+		System.out.println("Bienvenue sur EPIC GAME");
 
 		System.out.println("Quel type de partie voulez-vous lancer?");
 		System.out.println("1- Practice");
-		System.out.println("2- Versius");
+		System.out.println("2- Versus");
 		do {
-		System.out.print("Indiquez le numero correspondant à votre partie : ");
-		type_partie = sc.nextInt();
+			System.out.print("Indiquez le numero correspondant à votre partie : ");
+			type_partie = sc.nextInt();
 		}while(type_partie!=1 && type_partie!=2);
 		
 		renitialise_variable();
@@ -57,7 +55,7 @@ public class BatailleMain {
 			lancer_versus();
 		}
 		
-	}
+	} //fin main
 	
 	public static void initialise_actionPersonnageExistant() {
 		actionPersonnageExistant= new ArrayList();
@@ -68,6 +66,7 @@ public class BatailleMain {
 		actionPersonnageExistant.add("PROTECT");
 		actionPersonnageExistant.add("REST");
 	}
+	
 	public static void renitialise_variable() {
 		nb_tour=0;
 		gameStatus="";
@@ -82,11 +81,12 @@ public class BatailleMain {
 		personnageEquipe= new ArrayList();
 		actionPersonnageAutoriser= new ArrayList();
 	}
+	
 	public static void charger_fichier() {
 		
 		try {
 				
-				InputStream stream = new FileInputStream("C:\\Users\\AHMAD\\eclipse-workspace\\ProjetMercredi_DefiSopra\\src\\main\\resources\\configuration.properties");
+				InputStream stream = new FileInputStream("C:\\Users\\Utilisateur\\eclipse-workspace\\TP2_API_REST\\src\\main\\resources\\configuration.properties");
 				prop.load(stream);	
 				
 			} 
@@ -125,13 +125,7 @@ public class BatailleMain {
 				 }
 		}while(idPartie.equals("NA"));
 		 
-		  lancer_combat();
-	  
-	    
-	    //test
-	   // System.out.println("id de l'entrainement avec un Bot (NA si y a rien) : "+idPartie);
-	    
-	   
+		  lancer_combat();  
 		 
 	}
 
@@ -142,10 +136,6 @@ public class BatailleMain {
 		}while(idPartie.equals("NA"));
 		
 		lancer_combat();
-		//
-	    //test
-	    //System.out.println("Prochain affrontement (NA si y a rien) : "+idPartie);
-		//System.out.println("Desolé nous n'avons pas encore developpé cette fonctionnalité.");
 		 
 	}
 	public static void lancer_combat() {
@@ -162,6 +152,7 @@ public class BatailleMain {
 						  demander_choix_personnage();
 					  }
 					  
+					  
 				    break;
 				  case 2:
 					  if(type_partie==1) {
@@ -176,9 +167,11 @@ public class BatailleMain {
 					  }else {
 						  demander_choix_personnage();
 					  }
+					  
 					    break;
 				  default:
 					  System.out.println("Etat du jeu : "+gameStatus);
+					  afficher_statut_hero();
 					  if(type_partie==1){
 						  strategie_bot();
 					  }else {
@@ -186,19 +179,87 @@ public class BatailleMain {
 					  }
 					  
 					  
-				}
-				
+				}	
 				
 			}
 			System.out.println(gameStatus);
 			System.out.println(statut_coup);
 		}while(!gameStatus.equals("VICTORY")&&!gameStatus.equals("DEFEAT")&&!gameStatus.equals("CANCELLED")&&!gameStatus.equals("DRAW")&&!statut_coup.equals("DEFEAT"));
 		
+		
+		
+	}
+	
+	//Fonction permettant d'afficher les statuts actuels des personnages
+	public static void afficher_statut_hero() {
 		reload_gameBoard();
 		
-		System.out.println("Plateau du jeu : "+gameBoard);
+		//System.out.println("Plateau du jeu : "+gameBoard);
+
+		gson = new Gson();
+		Board playerBoard = gson.fromJson(gameBoard, Board.class);
+		showHeroesStatus(playerBoard);		
+	}
+	//Fonction permettant d'afficher les statuts actuels des personnages
+
+	public static void showHeroesStatus(Board playerBord) {  
+	  if(nb_tour > 3){
+		  //Récupération du dernier coup de l'adversaire
+		  String enemyLastMove = restClient.getLastEnnemieMove(idPartie, idEquipe);
+		  
+		  //Split de la chaine en 3 tableau
+		  String [] arrayAction = enemyLastMove.split("\\$");	 
+		  System.out.println("ArrayAction => " +arrayAction+ " Size "+arrayAction.length);
+		 		  
+		  System.out.println("The Builders            "+restClient.getNameEquipeAdverse(idPartie, idEquipe));
+		  int i = 0;
+		  myFighters = new ArrayList<EpicHero>();
+		  enemyFighters = new ArrayList<EpicHero>();
+	
+		  for (EpicHeroesLeague ehl : playerBord.getPlayerBoards()) {
+			  i++;
+			  if(ehl.getFighters()!=null) {
+				  for (EpicHero eh : ehl.getFighters()) {
+					  if(i == 1) {
+						  myFighters.add(eh);
+						  
+					  }
+					  if(i == 2) {
+						  enemyFighters.add(eh);
+						 
+					  }
+				   }
+			  }
+		   }
+		   for (int j = 0; j<3; j++) {
+				
+			   //enemyFighters.get(j).setLastAction=last_action_ennemie[1];
+			   //enemyFighters.get(j).setLastCible=last_action_ennemie[2];
+		    System.out.println((j+1)+" "+myFighters.get(j).getFighterClass()+"            "+(j+1)+" "+enemyFighters.get(j).getFighterClass());
+		    System.out.println("Vie : "+myFighters.get(j).getCurrentLife()+"            Vie : "+enemyFighters.get(j).getCurrentLife());
+		    System.out.println("Mana : "+myFighters.get(j).getCurrentMana()+"            Mana : "+enemyFighters.get(j).getCurrentMana());
+		    System.out.println("Statut : "+myFighters.get(j).getStates()+"       Statut : "+enemyFighters.get(j).getStates());
+		    if(nb_tour >4 & j< arrayAction.length) {
+		    	System.out.println("----------------------------------------------------------------------------");
+		    	String [] last_action_ennemie=arrayAction[j].split(",",3);		   	
+		    	System.out.println("        Dernier coup enemi: ACTION => "+last_action_ennemie[1]+" et CIBLE => "+last_action_ennemie[2]);
+		    	System.out.println("---------------------------------------------------------------------------");
+		    }
+		    
+		    if(enemyFighters.get(j).getFighterClass().equals("ORC")) {
+		    	p_orc=j;
+		    }
+		    if(enemyFighters.get(j).getFighterClass().equals("GUARD")) {
+		    	p_guard=j;
+		    }
+		    if(enemyFighters.get(j).getFighterClass().equals("PRIEST")) {
+		    	p_priest=j;
+		    }
+		}
+	}
 
 	}
+
 	public static void reload_gameBoard() {
 		  gameBoard =restClient.getGameBoardSorted(idPartie, idEquipe);
 		  System.out.println("Etat du jeu : "+gameStatus);
@@ -228,7 +289,7 @@ public class BatailleMain {
 	public static void demander_choix_personnage() {
 		
 		do {
-			System.out.print("Indiquer votre personnage n°"+nb_tour+" parmis ceux disponible ( "); 
+			 System.out.print("Indiquer votre personnage n°"+nb_tour+" parmi ceux disponibles ( "); 
 		     parcourir_list(personnageDisponible);
 		     nom_personnage = sc.nextLine();
 			
@@ -255,8 +316,77 @@ public class BatailleMain {
 	public static void strategie_bot() {
 		if(numero_bot==3) {
 			  action_a_effectuer("ATTACK","E1","DEFEND","A3","HEAL","A2");
+		  }else if(numero_bot==5) {
+			  String action="HEAL",cible_p;
+			  int cible_e=p_orc+1;
+			  int cible_a;
+			  if(myFighters.get(0).getCurrentLife()>myFighters.get(1).getCurrentLife()) {
+				  cible_a=2;
+			  }else {
+				  cible_a=1;
+			  }
+			  if(enemyFighters.get(p_orc).getCurrentLife()==0) {
+				  cible_e=p_guard+1;
+			  }
+
+			  if(enemyFighters.get(p_guard).getCurrentLife()==0) {
+				  cible_e=p_priest+1;
+			  }
+			  if(myFighters.get(2).getCurrentMana()==1) {
+				  action="REST";
+				  cible_p="A3";
+			  }else {
+				  cible_p="A"+cible_a;
+			  }
+
+			  action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
+		  }else if(numero_bot==4) {
+			  String action="HEAL",cible_p;
+			  int cible_e=p_priest+1;
+			  int cible_a;
+			  if(myFighters.get(0).getCurrentLife()>myFighters.get(1).getCurrentLife()) {
+				  cible_a=2;
+			  }else {
+				  cible_a=1;
+			  }
+			  if(enemyFighters.get(p_priest).getCurrentLife()==0) {
+				  cible_e=p_orc+1;
+			  }
+			  
+			  
+			  if(myFighters.get(2).getCurrentMana()==1) {
+				  action="REST";
+				  cible_p="A3";
+			  }else {
+				  cible_p="A"+cible_a;
+			  }
+			  
+			  action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
+			  
 		  }else {
-			  action_a_effectuer("ATTACK","E2","ATTACK","E1","HEAL","A1");
+
+			  String action="HEAL",cible_p;
+			  int cible_e=p_priest+1;
+			  int cible_a;
+			  if(myFighters.get(0).getCurrentLife()>myFighters.get(1).getCurrentLife()) {
+				  cible_a=2;
+			  }else {
+				  cible_a=1;
+			  }
+			  if(enemyFighters.get(p_priest).getCurrentLife()==0) {
+				  cible_e=p_orc+1;
+			  }
+
+			  if(enemyFighters.get(p_orc).getCurrentLife()==0) {
+				  cible_e=p_guard+1;
+			  }
+			  if(myFighters.get(2).getCurrentMana()==1) {
+				  action="REST";
+				  cible_p="A3";
+			  }else {
+				  cible_p="A"+cible_a;
+			  }
+			   action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
 		  }
 	}
 	public static void strategie_joueur() {
@@ -342,4 +472,145 @@ public class BatailleMain {
          }
          
 	}
+}
+
+class State {
+	
+		private String type;
+		private int remainingDuration;
+		
+		public String getType() {
+		return type;
+		}
+		public void setType(String type) {
+		this.type = type;
+		}
+		public int getRemainingDuration() {
+		return remainingDuration;
+		}
+		public void setRemainingDuration(int remainingDuration) {
+		this.remainingDuration = remainingDuration;
+		}
+
+}
+
+class EpicHero {
+
+		private String fighterClass;
+		private int orderNumberInTeam;
+		private boolean isDead;
+		private int maxAvailableMana;
+		private int maxAvailableLife;
+		private int currentMana;
+		private int currentLife;
+		private ArrayList<State> states ;
+		private String fighterID;
+		public String getFighterClass() {
+		return fighterClass;
+		}
+		public void setFighterClass(String fighterClass) {
+		this.fighterClass = fighterClass;
+		}
+		public int getOrderNumberInTeam() {
+		return orderNumberInTeam;
+		}
+		public void setOrderNumberInTeam(int orderNumberInTeam) {
+		this.orderNumberInTeam = orderNumberInTeam;
+		}
+		public boolean isDead() {
+		return isDead;
+		}
+		public void setDead(boolean isDead) {
+		this.isDead = isDead;
+		}
+		public int getMaxAvailableMana() {
+		return maxAvailableMana;
+		}
+		public void setMaxAvailableMana(int maxAvailableMana) {
+		this.maxAvailableMana = maxAvailableMana;
+		}
+		public int getMaxAvailableLife() {
+		return maxAvailableLife;
+		}
+		public void setMaxAvailableLife(int maxAvailableLife) {
+		this.maxAvailableLife = maxAvailableLife;
+		}
+		public int getCurrentMana() {
+		return currentMana;
+		}
+		public void setCurrentMana(int currentMana) {
+		this.currentMana = currentMana;
+		}
+		public int getCurrentLife() {
+		return currentLife;
+		}
+		public void setCurrentLife(int currentLife) {
+		this.currentLife = currentLife;
+		}
+		public ArrayList<State> getStates() {
+		return states;
+		}
+		public void setStates(ArrayList<State> states) {
+		this.states = states;
+		}
+		public String getFighterID() {
+		return fighterID;
+		}
+		public void setFighterID(String fighterID) {
+		this.fighterID = fighterID;
+		}
+}
+
+class EpicHeroesLeague  {
+
+		private String playerId;
+		private String playerName;
+		private ArrayList<EpicHero> fighters;
+		
+		public String getPlayerId() {
+		return playerId;
+		}
+		public void setPlayerId(String playerId) {
+		this.playerId = playerId;
+		}
+		public String getPlayerName() {
+		return playerName;
+		}
+		public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+		}
+		public ArrayList<EpicHero> getFighters() {
+		return fighters;
+		}
+		public void setFighters(ArrayList<EpicHero> fighters) {
+		this.fighters = fighters;
+		}
+
+
+}
+
+class Board {
+
+		private ArrayList<EpicHeroesLeague> playerBoards;
+		private int nbrTurnsLeft;
+		
+		public ArrayList<EpicHeroesLeague> getPlayerBoards() {
+		return playerBoards;
+		}
+		public void setPlayerBoards(ArrayList<EpicHeroesLeague> playerBoards) {
+		this.playerBoards = playerBoards;
+		}
+		public int getNbrTurnsLeft() {
+		return nbrTurnsLeft;
+		}
+		public void setNbrTurnsLeft(int nbrTurnsLeft) {
+		this.nbrTurnsLeft = nbrTurnsLeft;
+		}
+		@Override
+		public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+		}
+
+
 }
