@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.util.Scanner; 
 import java.util.List; 
 import java.util.ArrayList;
+import java.util.HashMap; 
+import java.util.Map; 
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,9 +23,11 @@ public class BatailleMain {
 	public static Properties prop = new Properties();
 	public static String idEquipe,idPartie,gameStatus, gameBoard,statut_personnage,statut_coup,nom_personnage,action_personnage,cible_personnage,attaque_a_effectuer,nom_equipe_adverse,teamName,teamPwd;
 	public static List<String> personnageDisponible,personnageEquipe,actionPersonnageAutoriser,actionPersonnageExistant;
-	public static int type_partie,nb_tour,numero_bot,numero_personnage,p_orc,p_priest,p_guard;
+	public static int type_partie,nb_tour,numero_bot,numero_personnage,p_orc,p_priest,p_guard,p_paladin,p_archer,p_chamanint,d_effet_a=0,d_effet_p=0;
 	public static ArrayList<EpicHero> myFighters,enemyFighters;
 	public static Gson gson;
+	public static HashMap<String, Integer> liste_ennemi_actuel ; 
+	
 	
 	
 	public static void main(String[] args) {
@@ -72,14 +76,14 @@ public class BatailleMain {
 		gameStatus="";
 		gameBoard="";
 		statut_coup="";
-		
+		liste_ennemi_actuel = new HashMap<>();
 		personnageDisponible= new ArrayList();
 		personnageDisponible.add("ORC");
 		personnageDisponible.add("GUARD");
 		personnageDisponible.add("PRIEST");
 		
 		personnageEquipe= new ArrayList();
-		actionPersonnageAutoriser= new ArrayList();
+	  	actionPersonnageAutoriser= new ArrayList();
 	}
 	
 	public static void charger_fichier() {
@@ -148,7 +152,7 @@ public class BatailleMain {
 				switch(nb_tour) {
 				  case 1:
 					  if(type_partie==1) {
-						  selectionner_personnage("ORC");
+						  selectionner_personnage("PALADIN");
 					  }else {
 						  demander_choix_personnage();
 					  }
@@ -164,7 +168,7 @@ public class BatailleMain {
 				    break;
 				  case 3:
 					  if(type_partie==1) {
-						  selectionner_personnage("PRIEST");
+						  selectionner_personnage("ARCHER");
 					  }else {
 						  demander_choix_personnage();
 					  }
@@ -254,15 +258,9 @@ public class BatailleMain {
 		    	System.out.println("---------------------------------------------------------------------------");
 		    }
 		    
-		    if(enemyFighters.get(j).getFighterClass().equals("ORC")) {
-		    	p_orc=j;
-		    }
-		    if(enemyFighters.get(j).getFighterClass().equals("GUARD")) {
-		    	p_guard=j;
-		    }
-		    if(enemyFighters.get(j).getFighterClass().equals("PRIEST")) {
-		    	p_priest=j;
-		    }
+		    liste_ennemi_actuel.put(enemyFighters.get(j).getFighterClass(),j);
+		    
+		   
 		}
 	}
 
@@ -322,9 +320,31 @@ public class BatailleMain {
 	}
 
 	public static void strategie_bot() {
-		if(numero_bot==13) {
-			  action_a_effectuer("ATTACK","E1","DEFEND","A3","HEAL","A2");
-		  }else if(numero_bot==5) {
+		if(numero_bot==51) {
+
+			  String action="HEAL",cible_p;
+			  int cible_e=p_priest+1;
+			  int cible_a;
+			  if(myFighters.get(0).getCurrentLife()>myFighters.get(1).getCurrentLife()) {
+				  cible_a=2;
+			  }else {
+				  cible_a=1;
+			  }
+			  if(enemyFighters.get(p_priest).getCurrentLife()==0) {
+				  cible_e=p_orc+1;
+			  }
+
+			  if(enemyFighters.get(p_orc).getCurrentLife()==0) {
+				  cible_e=p_guard+1;
+			  }
+			  if(myFighters.get(2).getCurrentMana()==1) {
+				  action="REST";
+				  cible_p="A3";
+			  }else {
+				  cible_p="A"+cible_a;
+			  }
+			   action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
+		  }else if(numero_bot==25) {
 			  String action="HEAL",cible_p;
 			  int cible_e=p_orc+1;
 			  int cible_a;
@@ -348,7 +368,7 @@ public class BatailleMain {
 			  }
 
 			  action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
-		  }else if(numero_bot==4) {
+		  }else if(numero_bot==24) {
 			  String action="HEAL",cible_p;
 			  int cible_e=p_priest+1;
 			  int cible_a;
@@ -373,29 +393,99 @@ public class BatailleMain {
 			  
 		  }else {
 
-			  String action="HEAL",cible_p;
-			  int cible_e=p_priest+1;
-			  int cible_a;
-			  if(myFighters.get(0).getCurrentLife()>myFighters.get(1).getCurrentLife()) {
-				  cible_a=2;
-			  }else {
-				  cible_a=1;
+			  String action_a,action_p,action_g,cible_g,liste_ennemi_vivant,liste_ennemi_rested,nom_cible_faible,nom_cible_rested,cible_p,cible_a;
+			  int p_cible_faible,p_cible_rest=0;
+			  
+			  
+			  liste_ennemi_vivant=liste_ennemi_vivant();
+			  nom_cible_faible=get_cible_prioritaire(liste_ennemi_vivant);
+			  p_cible_faible=liste_ennemi_actuel.get(nom_cible_faible)+1;
+			  
+			  liste_ennemi_rested=get_rested_enemy();
+			  nom_cible_rested=get_cible_prioritaire(liste_ennemi_rested);
+			  if(nom_cible_rested.equals("")) {
+				  nom_cible_rested="E0";
 			  }
-			  if(enemyFighters.get(p_priest).getCurrentLife()==0) {
-				  cible_e=p_orc+1;
+			  if(!nom_cible_rested.equals("E0") ) {
+					System.out.println(nom_cible_rested);
+
+					System.out.println(liste_ennemi_actuel);
+				  p_cible_rest=liste_ennemi_actuel.get(nom_cible_rested)+1;
+			  }
+			//Action Paladin
+			  if(myFighters.get(0).getCurrentMana()==1) {
+				  action_p="REST";
+				  cible_p="A1";
+			  }else {
+				  
+				  if(d_effet_p>0 || nom_cible_rested.equals("E0") ) {
+					  action_p="ATTACK";
+					  cible_p="E"+p_cible_faible;
+					  d_effet_p--;
+				  }else {
+					  action_p="CHARGE";
+					  cible_p="E"+p_cible_rest;
+					  d_effet_p=2;
+				  }
+			  }
+			  
+			  //Action GUARD
+			//
+			 /* if(myFighters.get(0).getCurrentLife()>myFighters.get(2).getCurrentLife()) {
+				  cible_g="A3";
+			  }else {
+				  cible_g="A1";
+			  }
+			  */
+			  if(myFighters.get(1).getCurrentMana()==1) {
+				  action_g="REST";
+				  cible_g="A2";
+			  }else {
+				  String hero_attaquer="A"+get_most_attacked_hero();
+				  if(!hero_attaquer.equals("A0")) {
+					  action_g="PROTECT";
+					  cible_g=hero_attaquer;
+				  }else {
+					  action_g="ATTACK";
+					  //get_cible_prioritaire();
+					  cible_g="E"+p_cible_faible;
+				  }
+			}
+			 
+			//Action ARCHER
+			  if(myFighters.get(2).getCurrentMana()==1) {
+				  action_a="REST";
+				  cible_a="A3";
+			  }else {
+				  cible_a="E"+p_cible_faible;
+				  if(d_effet_a>0) {
+					  action_a="ATTACK";
+					  d_effet_a--;
+				  }else {
+					  action_a="FIREBOLT";
+					  d_effet_a=3;
+				  }
+			  }
+			
+			  System.out.println(action_a);
+			  System.out.println();
+			  System.out.println(action_a);
+			  System.out.println(cible_a);
+			  
+			   action_a_effectuer(action_p,cible_p,action_g,cible_g,action_a,cible_a);
+		  }
+	}	
+	
+	public static String liste_ennemi_vivant() {
+		String liste_ennemi_vivant="";
+	    for (String i : liste_ennemi_actuel.keySet()) {
+	    	int p_ennemi= liste_ennemi_actuel.get(i);
+	    	if(enemyFighters.get(p_ennemi).getCurrentLife()>0) {
+	    		liste_ennemi_vivant+=" "+i;
 			  }
 
-			  if(enemyFighters.get(p_orc).getCurrentLife()==0) {
-				  cible_e=p_guard+1;
-			  }
-			  if(myFighters.get(2).getCurrentMana()==1) {
-				  action="REST";
-				  cible_p="A3";
-			  }else {
-				  cible_p="A"+cible_a;
-			  }
-			   action_a_effectuer("ATTACK","E"+cible_e,"ATTACK","E"+cible_e,action,cible_p);
-		  }
+	      }
+	    return liste_ennemi_vivant;
 	}
 	public static void strategie_joueur() {
 		int i=0;
@@ -433,10 +523,33 @@ public class BatailleMain {
 			actionPersonnageExistant.add("YELL");
 		}else if(nom.equals("GUARD")) {
 			actionPersonnageExistant.add("PROTECT");
-		}else {
+		}else if(nom.equals("PRIEST")) {
 			actionPersonnageExistant.add("HEAL");
+		} else if(nom.equals("CHAMAN")) {
+		actionPersonnageExistant.add("CLEANSE");
+		}else if(nom.equals("ARCHER")) {
+		actionPersonnageExistant.add("FIREBOLT");
+		}else if(nom.equals("PALADIN")) {
+		actionPersonnageExistant.add("CHARGE");
 		}
 		
+	}
+	//Fonction permetant de retourner le hero qui subit lus d'une attaque
+	public static String get_rested_enemy() {
+
+	for (EpicHero ef : enemyFighters) {
+		if(ef.getLastAction()!=null) {
+			
+			if(ef.getLastAction().equals("REST")) {
+				return ef.getFighterClass();
+			}
+			
+		}
+	}
+
+
+	return "E0";
+
 	}
 
 	public static void demander_type_attaque() {
@@ -468,6 +581,68 @@ public class BatailleMain {
 	    	 System.out.print(l+" ");
 	     }
 	     System.out.print(") :");  
+	}
+	//Fonction permettant de retourner la cible prioritaire
+	public static String get_cible_prioritaire(String listeEnemy) {
+	if(listeEnemy.contains("PRIEST"))
+	return "PRIEST";
+
+	if(listeEnemy.contains("ARCHER"))
+	return "ARCHER";
+
+	if(listeEnemy.contains("ORC"))
+	return "ORC";
+
+	if(listeEnemy.contains("PALADIN"))
+	return "PALADIN";
+
+	if(listeEnemy.contains("CHAMAN"))
+	return "CHAMAN";
+
+	if(listeEnemy.contains("GUARD"))
+	return "GUARD";
+
+	return "";
+	}
+	
+	//get max
+	public static int get_max_int(int a, int b, int c) {
+	int max1 = a > b ? a : b;
+	return max1 > c ? max1 : c;
+	}
+	//Fonction permetant de retourner le hero qui subit lus d'une attaque
+	public static String get_most_attacked_hero() {
+	int n1 =0,  n2 = 0, n3 = 0;
+	HashMap<String, Integer> map = new HashMap();
+	String result;
+	for (EpicHero ef : enemyFighters) {
+		String last_cible=ef.getLastCible();
+		if(last_cible==null) {
+			last_cible="";
+		}
+		
+	if(last_cible.equals("E1")) {
+	n1++;
+	} else if(last_cible.equals("E2")) {
+	n2++;
+	} else if(last_cible.equals("E3")) {
+	n3++;
+	}
+	map.put("E1", n1);
+	map.put("E2", n2);
+	map.put("E3", n3);
+	int max = get_max_int(n1, n2, n3);
+
+	if(max > 1) {
+	for (String key : map.keySet()) {
+	if(max == map.get(key))
+		return key.substring(1);
+	}
+	}
+	}
+
+	return "0";
+
 	}
 	public static void sleep(int n) {
 		
