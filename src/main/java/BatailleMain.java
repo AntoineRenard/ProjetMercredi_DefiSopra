@@ -144,6 +144,7 @@ public class BatailleMain {
 			if(gameStatus.equals("CANPLAY")) {
 				nb_tour++;
 				reload_gameStatus();
+				 System.out.println("Tour N°"+nb_tour);
 				switch(nb_tour) {
 				  case 1:
 					  if(type_partie==1) {
@@ -232,8 +233,7 @@ public class BatailleMain {
 		   }
 		   for (int j = 0; j<3; j++) {
 				
-			   //enemyFighters.get(j).setLastAction=last_action_ennemie[1];
-			   //enemyFighters.get(j).setLastCible=last_action_ennemie[2];
+		
 		    System.out.println((j+1)+" "+myFighters.get(j).getFighterClass()+"                                           "+(j+1)+" "+enemyFighters.get(j).getFighterClass());
 		    System.out.println("Vie : "+myFighters.get(j).getCurrentLife()+"                                       Vie : "+enemyFighters.get(j).getCurrentLife());
 		    System.out.println("Mana : "+myFighters.get(j).getCurrentMana()+"                                      Mana : "+enemyFighters.get(j).getCurrentMana());
@@ -245,8 +245,11 @@ public class BatailleMain {
 		    
 		    System.out.println("Statut : Type = "+typeStatut1+", Durée restante => "+statut1+" Statut :Type = "+typeStatut2+" et Durée restante => "+statut2);
 		    if(nb_tour >4 & j< arrayAction.length) {
+		 	 
 		    	System.out.println("----------------------------------------------------------------------------");
-		    	String [] last_action_ennemie=arrayAction[j].split(",",3);		   	
+		    	String [] last_action_ennemie=arrayAction[j].split(",",3);	
+		    	  enemyFighters.get(j).setLastAction(last_action_ennemie[1]);
+				   enemyFighters.get(j).setLastCible(last_action_ennemie[2]);
 		    	System.out.println("        Dernier coup enemi: ACTION = '"+last_action_ennemie[1]+"', CIBLE = '"+last_action_ennemie[2]+"'");
 		    	System.out.println("---------------------------------------------------------------------------");
 		    }
@@ -319,7 +322,7 @@ public class BatailleMain {
 	}
 
 	public static void strategie_bot() {
-		if(numero_bot==3) {
+		if(numero_bot==13) {
 			  action_a_effectuer("ATTACK","E1","DEFEND","A3","HEAL","A2");
 		  }else if(numero_bot==5) {
 			  String action="HEAL",cible_p;
@@ -508,6 +511,21 @@ class EpicHero {
 		private int maxAvailableLife;
 		private int currentMana;
 		private int currentLife;
+		private String lastAction;
+		private String lastCible;
+		
+		public String getLastAction() {
+			return lastAction;
+		}
+		public void setLastAction(String lastAction) {
+			this.lastAction = lastAction;
+		}
+		public String getLastCible() {
+			return lastCible;
+		}
+		public void setLastCible(String lastCible) {
+			this.lastCible = lastCible;
+		}
 		private ArrayList<State> states ;
 		private String fighterID;
 		public String getFighterClass() {

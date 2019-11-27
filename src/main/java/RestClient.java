@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 
 public class RestClient {
 	
-	private static final String API_URI = "http://codeandplay.tech/epic-ws/epic";
+	private static final String API_URI = "http://jourj.codeandplay.tech/epic-ws/epic";
 	
 	    
 	public String getPing() {
